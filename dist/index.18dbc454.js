@@ -7506,10 +7506,9 @@ parcelHelpers.export(exports, "commandInterpreter", ()=>commandInterpreter);
 var _modal = require("./modal");
 const cvModal = new (0, _modal.Modal)({
     title: "Curriculum Vitae",
-    body: '<div class="modal__body"></div>',
+    body: '<div class="modal__body"><iframe src="https://drive.google.com/file/d/1QYniUsk8Wdz-Pg7RxkN7T-NnCh7pQFWN/preview" width="100%" height="480" allow="autoplay" ></iframe></div>',
     resizable: true
 }).render();
-$("iframe").appendTo(".modal__body");
 const terminalModal = new (0, _modal.Modal)({
     title: "Terminal",
     body: '<div class="terminal__display"></div>\n        <div class="prompt">\n            <div class="prompt__user">user@localhost:~$</div>\n            <div class="prompt__input">\n                <span class="prompt__input__value"></span>\n                <span class="prompt__input__cursor"></span>\n                <input type="text" class="prompt__input__field" autofocus>\n            </div>\n        </div>'
