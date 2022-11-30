@@ -5,9 +5,11 @@ import {Modal} from "./modal";
 
 export const cvModal = new Modal({
     title: 'Curriculum Vitae',
-    body: '<div class="modal__body"><iframe src="https://drive.google.com/file/d/1QYniUsk8Wdz-Pg7RxkN7T-NnCh7pQFWN/preview" width="100%" height="480" allow="autoplay"></iframe></div>',
+    body: '<div class="modal__body"></div>',
     resizable: true,
+
 }).render();
+$('iframe').appendTo('.modal__body');
 
 export const terminalModal = new Modal({
     title: 'Terminal',
