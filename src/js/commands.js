@@ -1,12 +1,14 @@
 // Command interpreter
 //
 // The command map is a map of commands (string) to their output
+// TODO: Add cytoscape js in order to create a graph of my skills
+
 import {Modal} from "./modal";
 
 export const cvModal = new Modal({
     title: 'Curriculum Vitae',
     body: '<div class="modal__body"><iframe src="https://drive.google.com/file/d/1QYniUsk8Wdz-Pg7RxkN7T-NnCh7pQFWN/preview" width="100%" height="480" allow="autoplay" ></iframe></div>',
-    resizable: true,
+    resizable: {handles: 'e, w,', minWidth: 400},
 
 }).render();
 
@@ -23,27 +25,35 @@ export const terminalModal = new Modal({
         '        </div>',
 }).render().addClass('terminal').show()
 
+export const terminalDisplay = terminalModal.find('.terminal__display');
+
 const commandMap = {
     "help": "Voici la liste des commandes disponibles :" +
-        "\n- <span style='color:red;'>help</span> : affiche la liste des commandes disponibles" +
-        "\n- <span style='color:red;'>clear</span> : efface l'écran" +
-        "\n- <span style='color:red;'>cv</span> : affiche les informations du CV" +
+        "\n- <span style='color:red;'>help</span> : Affiche la liste des commandes disponibles" +
+        "\n- <span style='color:red;'>clear</span> : Efface l'écran" +
+        "\n- <span style='color:red;'>cv</span> : Affiche les informations du CV" +
         "\n- <span style='color:red;'>competences</span> : Mes compétences acquises durant ma formation et mes expériences" +
         "\n- <span style='color:red;'>veille</span> : Sujet de veille technologique que je prepare dans le cadre de mon BTS SIO" +
         "\n- <span style='color:red;'>projets</span> : Liste des projets que j'ai réalisé" +
-        "\n- <span style='color:red;'>contact</span> : affiche les informations de contact" +
-        "\n- <span style='color:red;'>about</span> : affiche des informations sur moi",
+        "\n- <span style='color:red;'>contact</span> : Affiche les informations de contact" +
+        "\n- <span style='color:red;'>about</span> : Affiche des informations sur moi" +
+        "\n- <span style='color:red;'>source</span> : Redirige vers le code source du site",
 
-    "about" : "Je suis un étudiant en BTS SIO option SLAM (Solutions Logicielles et Applications Métiers)\n" +
-        "Je suis passionné par l'informatique et les nouvelles technologies.\n" +
-        "Je suis autodidacte, j'aime apprendre de nouvelles choses et découvrir de nouvelles choses.\n" +
-        "Je suis curieux et j'aime résoudre des problèmes.\n" +
-        "Je sais travailler en équipe et je suis à l'écoute des autres.\n" +
-        "J'aime aussi la musculation \uD83D\uDCAA",
+    "about" : "<span style='font-weight:bold'>Je suis un étudiant en BTS SIO option SLAM (Solutions Logicielles et Applications Métiers) et :</span>\n" +
+        "- <span style='font-style: italic;color:cyan;'>Je suis passionné par l'informatique et les nouvelles technologies.</span>\n" +
+        "- <span style='font-style: italic;color:cyan'>Je suis autodidacte, j'aime apprendre de nouvelles choses et découvrir de nouvelles choses.</span>\n" +
+        "- <span style='font-style: italic;color:cyan'>Je suis curieux et j'aime résoudre des problèmes.</span>\n" +
+        "- <span style='font-style: italic;color:cyan'>Je sais travailler en équipe et je suis à l'écoute des autres.</span>\n" +
+        "- <span style='font-style: italic;color:cyan'>Ma deuxième passion est la musculation \u{1F4AA}</span>" +
+        "\n<span style='color: orangered'>Mon portfolio est encore en développement, d'autres fonctionnalités et corrections sont prévues.</span>",
 
-    "clear" : "clear",
+    "clear" : () => {
+        terminalDisplay.empty();
+        displayOutput(commandMap.motd);
+    },
 
-    "motd":"Bienvenue dans le portfolio de Lucas DURBEC !" +
+    "motd":"Bienvenue dans le portfolio interactif de <a style='color:yellow;' href='https://www.linkedin.com/in/lucas-durbec-653597223' target='_blank'>Lucas DURBEC !</a>" +
+        "\n<span style='font-weight: bold;color: #5e9ed6'>Ce portfolio est un portolio sous forme de terminal, vous pouvez utiliser les commandes suivantes pour naviguer dans le portfolio :</span>" +
         "\n\t-Pour obtenir de l'aide, tapez <span style='color:red;'>help</span>." +
         "\n\t-Pour en savoir plus sur moi, tapez <span style='color:red;'>about</span> ou <span style='color:red;'>cv</span>." +
         "\n\t-Pour me contacter, tapez <span style='color:red;'>contact</span>.",
@@ -52,7 +62,7 @@ const commandMap = {
         "\n- <span style='color:red;'>Email</span> : durbec.lucas@gmail.com" +
         "\n- <span style='color:red;'>Téléphone</span> : +33 6 48 54 27 26" +
         "\n- <span style='color:red;'>Ville</span> : 59121 Haulchin" +
-        "\n- <span style='color:red;'>Linkedin</span> : <a href='https://www.linkedin.com/in/lucas-durbec-1b1b3b1a3/' target='_blank'>Voir</a>",
+        "\n- <span style='color:red;'>Linkedin</span> : <a href='https://www.linkedin.com/in/lucas-durbec-653597223/' target='_blank'>Voir</a>",
 
     "veille": '<div style="display:flex;align-items:center;flex-direction: row;justify-content: center">' +
         '<svg version="1.1" id="solidity" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"\n' +
@@ -149,9 +159,23 @@ const commandMap = {
         'Le code est compilé en <span style="font-weight:bold">bytecode</span> et exécuté sur la blockchain Ethereum (EVM).\n' +
         '</div>' +
         '</div>\n',
-    'cv': cvModal,
+    'cv': () => {
+        cvModal.show();
+        cvModal.css('z-index', 1000);
+    },
+    'ping': '<span style="color: #00ff00">pong</span>',
+    'competences': '<span style="color: #00ff00">Quelque chose de spécial est prévue à cet endroit...\u{1F914}</span>',
+    'source': () => {
+        window.open('https://github.com/Daemon0x00000000/mon-portfolio', '_blank');
+    },
+    'projets': '<span style="color: #00ff00">Mes projets seront bientôt disponible ici...\u{23F3}</span>',
 };
 
+export function displayOutput(output, color="white") {
+    terminalDisplay.append("<span class='terminal__display__output' style='color:" + color + "'>" + output + "</span>");
+    // Scroll to bottom of terminal
+    terminalDisplay.scrollTop(terminalDisplay.prop("scrollHeight"));
+}
 
 export function commandInterpreter(command) {
     // Split the command into an array of words by non-breaking spaces
@@ -161,9 +185,18 @@ export function commandInterpreter(command) {
 
 
     if (commandName in commandMap) {
-        return commandMap[commandName];
+        try {
+            if (typeof commandMap[commandName] === "string") {
+                displayOutput(commandMap[commandName]);
+            } else {
+                commandMap[commandName](args);
+            }
+        } catch (e) {
+            displayOutput("Error: " + e.message, "red");
+        }
+    } else {
+        displayOutput("Commande inconnue: " + commandName, "red");
     }
-
-    return "Commande inconnue : " + commandName;
+    $(".terminal__display__output").last().hide().fadeIn(1000);
 }
 

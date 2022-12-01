@@ -2,19 +2,16 @@ import "./import-jquery";
 import 'jquery-ui-dist/jquery-ui';
 import 'jquery-ui-dist/jquery-ui.css';
 import './commands';
-import {commandInterpreter, cvModal, terminalModal} from "./commands";
+import {commandInterpreter, cvModal, displayOutput, terminalModal} from "./commands";
 
 $(document).ready(function() {
-    const terminal = $(".terminal");
     const desktop = $(".desktop");
-    terminal.css(
-        "transform", "translateX(" + (desktop.width()/2 - terminal.width()/2) + "px)"
+    terminalModal.css(
+        "transform", "translateX(" + (desktop.width()/2 - terminalModal.width()/2) + "px)"
     );
     terminalModal.on("dragstop", function() {
         promptInputField.focus();
     });
-    const display = $(".terminal__display");
-
 
     const prompt = $(".prompt");
     let promptInput = $(".prompt__input");
@@ -23,8 +20,7 @@ $(document).ready(function() {
     let promptInputField = $(".prompt__input__field");
 
 
-    displayOutput(commandInterpreter("motd"));
-    promptInputField.focus();
+    commandInterpreter("motd");
 
 
     // Lines system on prompt for user input in order to have wrapping
@@ -70,7 +66,7 @@ $(document).ready(function() {
 
 
     $(document).on("click", function(e) {
-        if (!terminal.is(e.target) && terminal.has(e.target).length === 0) {
+        if (!terminalModal.is(e.target) && terminalModal.has(e.target).length === 0) {
             promptInputField.blur();
             promptInputCursor.addClass("not__focused");
         } else {
@@ -124,23 +120,14 @@ $(document).ready(function() {
 
         displayOutput(`user@localhost:~$${command}`);
         if (command) {
-            const output = commandInterpreter(command);
-            output === "clear" ? display.empty() && displayOutput(commandInterpreter('motd')) : typeof output === "string" ? displayOutput(output) : output.show();
+            commandInterpreter(command);
             removeAllLines();
 
-            $(".terminal__display__output").last().hide().fadeIn(1000);
         }
     }
 
-    function displayOutput(output, color="white") {
-        display.append("<span class='terminal__display__output' style='color:" + color + "'>" + output + "</span>");
-        // Scroll to bottom of terminal
-        display.scrollTop(display.prop("scrollHeight"));
-        // Reset draggability of terminal and focus on drag stop
-    }
-
     $(".desktop__icon__image").on("click", function() {
-        terminal.fadeIn(250);
+        terminalModal.fadeIn(250);
     });
 
 

@@ -148,20 +148,17 @@ var _jqueryUi = require("jquery-ui-dist/jquery-ui");
 var _jqueryUiCss = require("jquery-ui-dist/jquery-ui.css");
 var _commands = require("./commands");
 $(document).ready(function() {
-    const terminal = $(".terminal");
     const desktop = $(".desktop");
-    terminal.css("transform", "translateX(" + (desktop.width() / 2 - terminal.width() / 2) + "px)");
+    (0, _commands.terminalModal).css("transform", "translateX(" + (desktop.width() / 2 - (0, _commands.terminalModal).width() / 2) + "px)");
     (0, _commands.terminalModal).on("dragstop", function() {
         promptInputField.focus();
     });
-    const display = $(".terminal__display");
     const prompt = $(".prompt");
     let promptInput = $(".prompt__input");
     const promptUser = $(".prompt__user");
     const promptInputCursor = $(".prompt__input__cursor");
     let promptInputField = $(".prompt__input__field");
-    displayOutput((0, _commands.commandInterpreter)("motd"));
-    promptInputField.focus();
+    (0, _commands.commandInterpreter)("motd");
     // Lines system on prompt for user input in order to have wrapping
     let lines = [];
     let currentLine = 0;
@@ -193,7 +190,7 @@ $(document).ready(function() {
         else return promptInput.width() + promptUser.width() + promptInputCursor.width() * 2 >= prompt.width();
     }
     $(document).on("click", function(e) {
-        if (!terminal.is(e.target) && terminal.has(e.target).length === 0) {
+        if (!(0, _commands.terminalModal).is(e.target) && (0, _commands.terminalModal).has(e.target).length === 0) {
             promptInputField.blur();
             promptInputCursor.addClass("not__focused");
         } else {
@@ -232,22 +229,14 @@ $(document).ready(function() {
     // Parses the command and displays the output
     function parseCommand(lines) {
         const command = lines.join("");
-        displayOutput(`user@localhost:~$${command}`);
+        (0, _commands.displayOutput)(`user@localhost:~$${command}`);
         if (command) {
-            const output = (0, _commands.commandInterpreter)(command);
-            output === "clear" ? display.empty() && displayOutput((0, _commands.commandInterpreter)("motd")) : typeof output === "string" ? displayOutput(output) : output.show();
+            (0, _commands.commandInterpreter)(command);
             removeAllLines();
-            $(".terminal__display__output").last().hide().fadeIn(1000);
         }
     }
-    function displayOutput(output, color = "white") {
-        display.append("<span class='terminal__display__output' style='color:" + color + "'>" + output + "</span>");
-        // Scroll to bottom of terminal
-        display.scrollTop(display.prop("scrollHeight"));
-    // Reset draggability of terminal and focus on drag stop
-    }
     $(".desktop__icon__image").on("click", function() {
-        terminal.fadeIn(250);
+        (0, _commands.terminalModal).fadeIn(250);
     });
     // Inspired by https://stackoverflow.com/questions/23284429/select-area-rectangle-in-javascript/23284608
     let square = $("<div class='square'></div>");
@@ -7109,37 +7098,67 @@ exports.export = function(dest, destName, get) {
 // Command interpreter
 //
 // The command map is a map of commands (string) to their output
+// TODO: Add cytoscape js in order to create a graph of my skills
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "cvModal", ()=>cvModal);
 parcelHelpers.export(exports, "terminalModal", ()=>terminalModal);
+parcelHelpers.export(exports, "terminalDisplay", ()=>terminalDisplay);
+parcelHelpers.export(exports, "displayOutput", ()=>displayOutput);
 parcelHelpers.export(exports, "commandInterpreter", ()=>commandInterpreter);
 var _modal = require("./modal");
 const cvModal = new (0, _modal.Modal)({
     title: "Curriculum Vitae",
     body: '<div class="modal__body"><iframe src="https://drive.google.com/file/d/1QYniUsk8Wdz-Pg7RxkN7T-NnCh7pQFWN/preview" width="100%" height="480" allow="autoplay" ></iframe></div>',
-    resizable: true
+    resizable: {
+        handles: "e, w,",
+        minWidth: 400
+    }
 }).render();
 const terminalModal = new (0, _modal.Modal)({
     title: "Terminal",
     body: '<div class="terminal__display"></div>\n        <div class="prompt">\n            <div class="prompt__user">user@localhost:~$</div>\n            <div class="prompt__input">\n                <span class="prompt__input__value"></span>\n                <span class="prompt__input__cursor"></span>\n                <input type="text" class="prompt__input__field" autofocus>\n            </div>\n        </div>'
 }).render().addClass("terminal").show();
+const terminalDisplay = terminalModal.find(".terminal__display");
 const commandMap = {
-    "help": "Voici la liste des commandes disponibles :\n- <span style='color:red;'>help</span> : affiche la liste des commandes disponibles\n- <span style='color:red;'>clear</span> : efface l'\xe9cran\n- <span style='color:red;'>cv</span> : affiche les informations du CV\n- <span style='color:red;'>competences</span> : Mes comp\xe9tences acquises durant ma formation et mes exp\xe9riences\n- <span style='color:red;'>veille</span> : Sujet de veille technologique que je prepare dans le cadre de mon BTS SIO\n- <span style='color:red;'>projets</span> : Liste des projets que j'ai r\xe9alis\xe9\n- <span style='color:red;'>contact</span> : affiche les informations de contact\n- <span style='color:red;'>about</span> : affiche des informations sur moi",
-    "about": "Je suis un \xe9tudiant en BTS SIO option SLAM (Solutions Logicielles et Applications M\xe9tiers)\nJe suis passionn\xe9 par l'informatique et les nouvelles technologies.\nJe suis autodidacte, j'aime apprendre de nouvelles choses et d\xe9couvrir de nouvelles choses.\nJe suis curieux et j'aime r\xe9soudre des probl\xe8mes.\nJe sais travailler en \xe9quipe et je suis \xe0 l'\xe9coute des autres.\nJ'aime aussi la musculation \uD83D\uDCAA",
-    "clear": "clear",
-    "motd": "Bienvenue dans le portfolio de Lucas DURBEC !\n	-Pour obtenir de l'aide, tapez <span style='color:red;'>help</span>.\n	-Pour en savoir plus sur moi, tapez <span style='color:red;'>about</span> ou <span style='color:red;'>cv</span>.\n	-Pour me contacter, tapez <span style='color:red;'>contact</span>.",
-    "contact": "Voici mes coordonn\xe9es :\n- <span style='color:red;'>Email</span> : durbec.lucas@gmail.com\n- <span style='color:red;'>T\xe9l\xe9phone</span> : +33 6 48 54 27 26\n- <span style='color:red;'>Ville</span> : 59121 Haulchin\n- <span style='color:red;'>Linkedin</span> : <a href='https://www.linkedin.com/in/lucas-durbec-1b1b3b1a3/' target='_blank'>Voir</a>",
+    "help": "Voici la liste des commandes disponibles :\n- <span style='color:red;'>help</span> : Affiche la liste des commandes disponibles\n- <span style='color:red;'>clear</span> : Efface l'\xe9cran\n- <span style='color:red;'>cv</span> : Affiche les informations du CV\n- <span style='color:red;'>competences</span> : Mes comp\xe9tences acquises durant ma formation et mes exp\xe9riences\n- <span style='color:red;'>veille</span> : Sujet de veille technologique que je prepare dans le cadre de mon BTS SIO\n- <span style='color:red;'>projets</span> : Liste des projets que j'ai r\xe9alis\xe9\n- <span style='color:red;'>contact</span> : Affiche les informations de contact\n- <span style='color:red;'>about</span> : Affiche des informations sur moi\n- <span style='color:red;'>source</span> : Redirige vers le code source du site",
+    "about": "<span style='font-weight:bold'>Je suis un \xe9tudiant en BTS SIO option SLAM (Solutions Logicielles et Applications M\xe9tiers) et :</span>\n- <span style='font-style: italic;color:cyan;'>Je suis passionn\xe9 par l'informatique et les nouvelles technologies.</span>\n- <span style='font-style: italic;color:cyan'>Je suis autodidacte, j'aime apprendre de nouvelles choses et d\xe9couvrir de nouvelles choses.</span>\n- <span style='font-style: italic;color:cyan'>Je suis curieux et j'aime r\xe9soudre des probl\xe8mes.</span>\n- <span style='font-style: italic;color:cyan'>Je sais travailler en \xe9quipe et je suis \xe0 l'\xe9coute des autres.</span>\n- <span style='font-style: italic;color:cyan'>Ma deuxi\xe8me passion est la musculation \uD83D\uDCAA</span>\n<span style='color: orangered'>Mon portfolio est encore en d\xe9veloppement, d'autres fonctionnalit\xe9s et corrections sont pr\xe9vues.</span>",
+    "clear": ()=>{
+        terminalDisplay.empty();
+        displayOutput(commandMap.motd);
+    },
+    "motd": "Bienvenue dans le portfolio interactif de <a style='color:yellow;' href='https://www.linkedin.com/in/lucas-durbec-653597223' target='_blank'>Lucas DURBEC !</a>\n<span style='font-weight: bold;color: #5e9ed6'>Ce portfolio est un portolio sous forme de terminal, vous pouvez utiliser les commandes suivantes pour naviguer dans le portfolio :</span>\n	-Pour obtenir de l'aide, tapez <span style='color:red;'>help</span>.\n	-Pour en savoir plus sur moi, tapez <span style='color:red;'>about</span> ou <span style='color:red;'>cv</span>.\n	-Pour me contacter, tapez <span style='color:red;'>contact</span>.",
+    "contact": "Voici mes coordonn\xe9es :\n- <span style='color:red;'>Email</span> : durbec.lucas@gmail.com\n- <span style='color:red;'>T\xe9l\xe9phone</span> : +33 6 48 54 27 26\n- <span style='color:red;'>Ville</span> : 59121 Haulchin\n- <span style='color:red;'>Linkedin</span> : <a href='https://www.linkedin.com/in/lucas-durbec-653597223/' target='_blank'>Voir</a>",
     "veille": '<div style="display:flex;align-items:center;flex-direction: row;justify-content: center"><svg version="1.1" id="solidity" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"\n	 viewBox="0 0 652 652" style="enable-background:new 0 0 652 652;" xml:space="preserve">\n<style type="text/css">\n	.st0{opacity:0.45;}\n	.st1{fill:#010101;}\n	.st2{opacity:0.6;}\n	.st3{opacity:0.8;}\n	.st4{fill:#020202;}\n</style>\n<g>\n	<g class="st0">\n		<g>\n			<polygon class="st1" points="377.2,71.9 320.3,173.1 206.4,173.1 263.3,71.9 			"/>\n		</g>\n	</g>\n	<g class="st2">\n		<g>\n			<polygon class="st1" points="320.3,173.1 434.1,173.1 377.2,71.9 263.3,71.9 			"/>\n		</g>\n	</g>\n	<g class="st3">\n		<g>\n			<polygon class="st1" points="263.3,274.3 320.3,173.1 263.3,71.9 206.4,173.1 			"/>\n		</g>\n	</g>\n	<g class="st0">\n		<g>\n			<polygon class="st1" points="263.9,426.1 320.8,324.9 434.7,324.9 377.7,426.1 			"/>\n		</g>\n	</g>\n	<g class="st2">\n		<g>\n			<polygon class="st1" points="320.8,324.9 207,324.9 263.9,426.1 377.7,426.1 			"/>\n		</g>\n	</g>\n	<g class="st3">\n		<g>\n			<polygon class="st1" points="377.7,223.7 320.8,324.9 377.7,426.1 434.7,324.9 			"/>\n		</g>\n	</g>\n	<path class="st4" d="M195.5,522.9c0,1.6,0.7,2.8,2,3.6c1.3,0.8,2.9,1.5,4.9,2c1.9,0.5,4,1,6.3,1.4c2.3,0.4,4.4,1,6.3,1.7\n		c1.9,0.8,3.5,1.8,4.9,3.2c1.3,1.3,2,3.2,2,5.5c0,2-0.5,3.7-1.4,5.1c-0.9,1.4-2.1,2.6-3.5,3.5c-1.4,0.9-3,1.6-4.7,2.1\n		c-1.7,0.5-3.5,0.7-5.1,0.7c-1.8,0-3.6-0.2-5.4-0.6c-1.8-0.4-3.4-1-4.8-1.9c-1.4-0.9-2.6-2-3.5-3.4c-0.9-1.4-1.4-3.2-1.4-5.3\n		c0-0.7,0.1-1.3,0.3-1.8c0.2-0.5,0.7-0.7,1.6-0.7c0.4,0,0.7,0.2,0.9,0.6c0.2,0.4,0.3,0.8,0.3,1.1c0,1.8,0.3,3.3,1,4.5\n		c0.7,1.2,1.5,2.1,2.7,2.7c1.1,0.7,2.4,1.1,3.9,1.4c1.5,0.3,2.9,0.4,4.5,0.4c1.2,0,2.5-0.2,3.9-0.5c1.4-0.3,2.6-0.8,3.8-1.5\n		c1.1-0.7,2.1-1.5,2.8-2.6c0.8-1.1,1.1-2.3,1.1-3.8c0-1.8-0.7-3.2-2-4.2c-1.3-1-2.9-1.8-4.9-2.3c-1.9-0.6-4-1.1-6.3-1.4\n		c-2.3-0.4-4.4-0.9-6.3-1.6c-1.9-0.7-3.5-1.6-4.9-2.8c-1.3-1.2-2-2.8-2-4.9c0-1.8,0.5-3.3,1.4-4.5c0.9-1.2,2.1-2.1,3.4-2.8\n		c1.4-0.7,2.9-1.2,4.5-1.4c1.6-0.3,3.2-0.4,4.6-0.4c1.7,0,3.5,0.2,5.2,0.5c1.7,0.4,3.3,0.9,4.6,1.7c1.4,0.8,2.5,1.9,3.4,3.3\n		s1.3,3.1,1.3,5.1c0,0.4-0.2,0.8-0.5,1c-0.4,0.3-0.7,0.4-1.1,0.4c-0.5,0-0.9-0.2-1.1-0.5c-0.2-0.4-0.3-0.7-0.3-1.1\n		c-0.3-1.6-0.8-2.9-1.6-3.9c-0.8-1-1.7-1.7-2.7-2.2c-1.1-0.5-2.2-0.9-3.4-1c-1.2-0.2-2.5-0.3-3.7-0.3c-1,0-2.1,0.1-3.4,0.2\n		c-1.2,0.1-2.4,0.4-3.5,0.9c-1.1,0.4-2.1,1-2.8,1.8C195.9,520.6,195.5,521.6,195.5,522.9"/>\n	<path class="st4" d="M253,513.4c2.5,0,4.9,0.5,7.1,1.6c2.2,1.1,4.1,2.5,5.6,4.2c1.6,1.7,2.8,3.8,3.7,6.1c0.9,2.3,1.3,4.7,1.3,7.1\n		c0,2.5-0.4,4.9-1.3,7.1c-0.9,2.3-2.1,4.3-3.7,6.1c-1.6,1.7-3.4,3.1-5.6,4.2c-2.2,1.1-4.5,1.6-7.1,1.6c-2.5,0-4.9-0.5-7-1.6\n		c-2.1-1.1-4-2.5-5.6-4.2c-1.6-1.7-2.8-3.8-3.7-6.1c-0.9-2.3-1.3-4.7-1.3-7.1c0-2.5,0.4-4.9,1.3-7.1c0.9-2.3,2.1-4.3,3.7-6.1\n		c1.6-1.7,3.4-3.1,5.6-4.2C248.1,514,250.5,513.4,253,513.4 M253,548.4c2.2,0,4.2-0.5,5.9-1.4c1.8-0.9,3.3-2.1,4.6-3.5\n		c1.3-1.5,2.3-3.1,2.9-5.1c0.7-1.9,1-3.9,1-5.9c0-2-0.3-4-1-5.9c-0.7-1.9-1.7-3.6-2.9-5c-1.3-1.5-2.8-2.6-4.6-3.5\n		c-1.8-0.9-3.8-1.4-5.9-1.4c-2.1,0-4.1,0.5-5.8,1.4c-1.8,0.9-3.3,2.1-4.6,3.5c-1.3,1.5-2.3,3.1-3,5c-0.7,1.9-1.1,3.9-1.1,5.9\n		c0,2,0.4,4,1.1,5.9c0.7,1.9,1.7,3.6,3,5.1c1.3,1.5,2.8,2.6,4.6,3.5C249,547.9,250.9,548.4,253,548.4"/>\n	<path class="st4" d="M286.7,483.9c0.4,0,0.8,0.2,1.1,0.5c0.3,0.3,0.4,0.7,0.4,1v63.9c0,0.4-0.1,0.7-0.4,1c-0.3,0.3-0.7,0.5-1.1,0.5\n		s-0.8-0.2-1.1-0.5c-0.3-0.3-0.4-0.7-0.4-1v-63.9c0-0.4,0.1-0.7,0.4-1C285.9,484,286.2,483.9,286.7,483.9"/>\n	<path class="st4" d="M306.2,503.8c0,0.7-0.3,1.2-0.8,1.7c-0.5,0.5-1.1,0.7-1.7,0.7c-0.7,0-1.3-0.2-1.8-0.7c-0.5-0.5-0.7-1-0.7-1.7\n		c0-0.7,0.2-1.3,0.7-1.8c0.5-0.5,1.1-0.7,1.8-0.7c0.7,0,1.2,0.2,1.7,0.7C305.9,502.5,306.2,503.1,306.2,503.8 M303.6,514.5\n		c0.4,0,0.7,0.2,1,0.5c0.3,0.3,0.5,0.7,0.5,1v33.2c0,0.4-0.2,0.7-0.5,1c-0.3,0.3-0.7,0.5-1,0.5c-0.4,0-0.8-0.2-1.1-0.5\n		c-0.3-0.3-0.4-0.7-0.4-1v-33.2c0-0.4,0.1-0.7,0.4-1C302.8,514.7,303.2,514.5,303.6,514.5"/>\n	<path class="st4" d="M353.4,483.8c0.4,0,0.8,0.2,1.1,0.5c0.3,0.3,0.4,0.7,0.4,1v63.8c0,1-0.5,1.5-1.5,1.5c-1,0-1.5-0.5-1.5-1.5v-7\n		c-1.5,2.8-3.6,5.1-6.3,6.9c-2.7,1.7-5.7,2.6-8.9,2.6c-2.5,0-4.9-0.5-7-1.6c-2.1-1.1-4-2.5-5.6-4.2c-1.6-1.7-2.8-3.8-3.7-6.1\n		c-0.9-2.3-1.3-4.7-1.3-7.1c0-2.5,0.4-4.9,1.3-7.1c0.9-2.3,2.1-4.3,3.7-6.1c1.6-1.7,3.4-3.1,5.6-4.2c2.1-1.1,4.5-1.6,7-1.6\n		c3.3,0,6.3,0.9,8.9,2.7c2.7,1.8,4.8,4.1,6.3,6.9v-38c0-0.4,0.1-0.7,0.4-1C352.6,483.9,353,483.8,353.4,483.8 M336.6,548.6\n		c2.2,0,4.2-0.5,5.9-1.4c1.8-0.9,3.3-2.1,4.6-3.5c1.3-1.5,2.3-3.1,2.9-5.1c0.7-1.9,1-3.9,1-5.9c0-2-0.3-4-1-5.9\n		c-0.7-1.9-1.7-3.6-2.9-5.1c-1.3-1.5-2.8-2.6-4.6-3.5c-1.8-0.9-3.8-1.4-5.9-1.4c-2.1,0-4.1,0.5-5.8,1.4c-1.8,0.9-3.3,2.1-4.6,3.5\n		c-1.3,1.5-2.3,3.1-3,5.1c-0.7,1.9-1.1,3.9-1.1,5.9c0,2,0.4,4,1.1,5.9c0.7,1.9,1.7,3.6,3,5.1c1.3,1.5,2.8,2.6,4.6,3.5\n		C332.5,548.1,334.5,548.6,336.6,548.6"/>\n	<path class="st4" d="M373.4,503.8c0,0.7-0.3,1.2-0.8,1.7c-0.5,0.5-1.1,0.7-1.7,0.7c-0.7,0-1.3-0.2-1.8-0.7c-0.5-0.5-0.7-1-0.7-1.7\n		c0-0.7,0.2-1.3,0.7-1.8c0.5-0.5,1.1-0.7,1.8-0.7c0.7,0,1.2,0.2,1.7,0.7C373.2,502.5,373.4,503.1,373.4,503.8 M370.9,514.5\n		c0.4,0,0.7,0.2,1,0.5c0.3,0.3,0.5,0.7,0.5,1v33.2c0,0.4-0.2,0.7-0.5,1c-0.3,0.3-0.7,0.5-1,0.5c-0.4,0-0.8-0.2-1.1-0.5\n		c-0.3-0.3-0.4-0.7-0.4-1v-33.2c0-0.4,0.1-0.7,0.4-1C370.1,514.7,370.5,514.5,370.9,514.5"/>\n	<path class="st4" d="M405.4,514.3c0.4,0,0.8,0.2,1.1,0.5c0.3,0.3,0.4,0.7,0.4,1c0,1-0.5,1.5-1.5,1.5h-8.2v32.1c0,0.4-0.1,0.7-0.4,1\n		c-0.3,0.3-0.7,0.5-1.1,0.5c-0.4,0-0.8-0.2-1.1-0.5c-0.3-0.3-0.4-0.7-0.4-1v-32.1h-7.9c-1,0-1.5-0.5-1.5-1.5c0-0.4,0.1-0.7,0.4-1\n		c0.3-0.3,0.7-0.5,1.1-0.5h7.9v-11.8c0-1,0.5-1.5,1.5-1.5c1,0,1.5,0.5,1.5,1.5v11.8H405.4z"/>\n	<path class="st4" d="M447.7,514.2c1,0,1.5,0.5,1.5,1.5c0,0.1-0.3,0.9-0.9,2.4c-0.6,1.5-1.3,3.5-2.2,5.9c-0.9,2.4-2,5.2-3.2,8.3\n		c-1.2,3.1-2.5,6.3-3.8,9.7c-1.3,3.3-2.6,6.6-3.8,9.8c-1.2,3.2-2.4,6.1-3.4,8.8c-1.1,2.7-1.9,4.9-2.7,6.8c-0.7,1.9-1.2,3-1.4,3.5\n		c-0.4,0.7-0.8,1-1.4,1c-0.4,0-0.7-0.2-1-0.5c-0.3-0.3-0.5-0.7-0.5-1c0-0.1,0.2-0.7,0.5-1.7c0.4-1,0.8-2.2,1.3-3.5\n		c0.5-1.4,1.1-2.9,1.7-4.5c0.7-1.6,1.3-3.2,1.9-4.7c0.6-1.5,1.1-2.8,1.5-3.9c0.4-1.1,0.7-1.8,0.9-2.2c-0.1-0.1-0.5-0.9-1.2-2.6\n		c-0.7-1.7-1.6-3.8-2.7-6.3c-1.1-2.5-2.2-5.2-3.3-8.1c-1.2-2.9-2.3-5.6-3.3-8.1c-1-2.5-1.9-4.6-2.6-6.3c-0.7-1.7-1-2.6-1-2.7\n		c0-1,0.5-1.5,1.5-1.5c0.7,0,1.2,0.3,1.4,0.9l12.7,30.9l12-30.8C446.5,514.5,447,514.2,447.7,514.2"/>\n</g>\n</svg><div>Dans le cadre de mon BTS SIO, je dois r\xe9aliser une veille technologique sur le sujet de mon choix.J\'ai choisi le language de programmation <span style="font-weight:bold">Solidity</span>\n\n<span style="font-weight:bold">Solidity</span> est un langage de programmation orient\xe9 objet, qui permet de cr\xe9er des contrats intelligents sur la blockchain Ethereum.\nLe code est compil\xe9 en <span style="font-weight:bold">bytecode</span> et ex\xe9cut\xe9 sur la blockchain Ethereum (EVM).\n</div></div>\n',
-    "cv": cvModal
+    "cv": ()=>{
+        cvModal.show();
+        cvModal.css("z-index", 1000);
+    },
+    "ping": '<span style="color: #00ff00">pong</span>',
+    "competences": '<span style="color: #00ff00">Quelque chose de sp\xe9cial est pr\xe9vue \xe0 cet endroit...\uD83E\uDD14</span>',
+    "source": ()=>{
+        window.open("https://github.com/Daemon0x00000000/mon-portfolio", "_blank");
+    },
+    "projets": '<span style="color: #00ff00">Mes projets seront bient\xf4t disponible ici...⏳</span>'
 };
+function displayOutput(output, color = "white") {
+    terminalDisplay.append("<span class='terminal__display__output' style='color:" + color + "'>" + output + "</span>");
+    // Scroll to bottom of terminal
+    terminalDisplay.scrollTop(terminalDisplay.prop("scrollHeight"));
+}
 function commandInterpreter(command) {
     // Split the command into an array of words by non-breaking spaces
     const words = command.split("\xa0");
     const commandName = words[0].toLowerCase();
     const args = words.slice(1);
-    if (commandName in commandMap) return commandMap[commandName];
-    return "Commande inconnue : " + commandName;
+    if (commandName in commandMap) try {
+        if (typeof commandMap[commandName] === "string") displayOutput(commandMap[commandName]);
+        else commandMap[commandName](args);
+    } catch (e) {
+        displayOutput("Error: " + e.message, "red");
+    }
+    else displayOutput("Commande inconnue: " + commandName, "red");
+    $(".terminal__display__output").last().hide().fadeIn(1000);
 }
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./modal":"aHHgN"}],"aHHgN":[function(require,module,exports) {
@@ -7188,8 +7207,9 @@ class Modal {
                 $(window).height() - this.modal.height() - 5
             ]
         });
-        this.resizable && this.modal.resizable();
+        this.resizable && this.modal.resizable(this.resizable);
         this.modal.hide();
+        $(".modal__header__buttons__button.red", this.modal).click(()=>this.modal.fadeOut(500));
     }
     render() {
         this.modal = $(`
@@ -7205,7 +7225,6 @@ class Modal {
                 ${this.body}
             </div>
         `);
-        $(".modal__header__buttons__button.red", this.modal).click(()=>this.modal.fadeOut(500));
         this.initialize();
         this.mouseDownEventListener();
         this.resizeEventListener();

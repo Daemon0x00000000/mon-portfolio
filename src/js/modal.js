@@ -32,15 +32,16 @@ export class Modal {
         }, 100);
     }
 
+
     initialize() {
         this.modal.appendTo($('.container'));
         this.modal.draggable({
             handle: '.modal__header',
             containment: [0, 0, $(window).width() - this.modal.width() -5, $(window).height() - this.modal.height() - 5]
         });
-        this.resizable && this.modal.resizable();
+        this.resizable && this.modal.resizable(this.resizable);
         this.modal.hide();
-
+        $('.modal__header__buttons__button.red', this.modal).click(() => this.modal.fadeOut(500));
     }
 
     render() {
@@ -57,9 +58,7 @@ export class Modal {
                 ${this.body}
             </div>
         `);
-        $('.modal__header__buttons__button.red', this.modal).click(() => this.modal.fadeOut(500));
         this.initialize();
-
 
         this.mouseDownEventListener();
         this.resizeEventListener();
