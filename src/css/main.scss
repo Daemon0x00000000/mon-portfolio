@@ -8,6 +8,7 @@ body
 
 }
 
+
 ::selection
 {
     background: #fff;
@@ -63,6 +64,11 @@ body
     justify-content: center;
     align-items: center;
     cursor: pointer;
+
+    &.selected
+    {
+        background: rgba(0,0,0,.2);
+    }
 }
 
 .desktop__icon__image {
@@ -72,10 +78,6 @@ body
 
 }
 
-.terminalIcon
-{
-    background: url("../img/terminal.png");
-}
 .bgSize
 {
     background-size: cover;

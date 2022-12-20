@@ -2,9 +2,9 @@
   "name": "portfolio",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "js/main.js",
   "scripts": {
-    "start": "parcel src/index.html"
+    "start": "parcel src/index.html --no-hmr"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +13,7 @@
     "parcel": "^2.8.0"
   },
   "dependencies": {
+    "cytoscape": "^3.23.0",
     "jquery": "^3.6.1",
     "jquery-ui": "^1.13.2",
     "jquery-ui-dist": "^1.13.2"

@@ -2,7 +2,9 @@ import "./import-jquery";
 import 'jquery-ui-dist/jquery-ui';
 import 'jquery-ui-dist/jquery-ui.css';
 import './commands';
+import './desktopIcon';
 import {commandInterpreter, cvModal, displayOutput, terminalModal} from "./commands";
+import {DesktopIcon} from "./desktopIcon";
 
 $(document).ready(function() {
     const desktop = $(".desktop");
@@ -21,7 +23,12 @@ $(document).ready(function() {
 
 
     commandInterpreter("motd");
-
+    new DesktopIcon({title:"Terminal", icon:"terminal.aec37826.png",action: () => {
+        terminalModal.fadeIn(250);
+    }}).render();
+    new DesktopIcon({title:"Settings", icon:"settings.3b0c3c5e.png",action: () => {
+        alert("En cours de développement");
+    }}).render();
 
     // Lines system on prompt for user input in order to have wrapping
     let lines = [];
@@ -126,9 +133,6 @@ $(document).ready(function() {
         }
     }
 
-    $(".desktop__icon__image").on("click", function() {
-        terminalModal.fadeIn(250);
-    });
 
 
 
@@ -149,7 +153,38 @@ $(document).ready(function() {
         });
     }
 
+    function selectIcons() {
+        let selectedIcons = [];
+        desktop.find(".desktop__icon").each(function() {
+            let icon = $(this);
+            let iconX = icon.offset().left;
+            let iconY = icon.offset().top;
+            let iconWidth = icon.width();
+            let iconHeight = icon.height();
+            if ((iconX >= x1 && iconX <= x2 && iconY >= y1 && iconY <= y2) || (iconX <= x1 && iconX + iconWidth >= x2 && iconY <= y1 && iconY + iconHeight >= y2)) {
+                selectedIcons.push(icon);
+            } else if (iconX + iconWidth >= x1 && iconX + iconWidth <= x2 && iconY >= y1 && iconY <= y2) {
+                selectedIcons.push(icon);
+            } else if (iconX >= x1 && iconX <= x2 && iconY + iconHeight >= y1 && iconY + iconHeight <= y2) {
+                selectedIcons.push(icon);
+            } else if (iconX + iconWidth >= x1 && iconX + iconWidth <= x2 && iconY + iconHeight >= y1 && iconY + iconHeight <= y2) {
+                selectedIcons.push(icon);
+            }
+        });
+        return selectedIcons;
+    }
+
+    function highlightIcons() {
+        let selectedIcons = selectIcons();
+        // Remove all highlights
+        desktop.find(".desktop__icon").removeClass("selected");
+        selectedIcons.forEach(function(icon) {
+            icon.addClass("selected");
+        });
+    }
+
     desktop.on("mousedown", function(e) {
+
         let timer = setTimeout(function() {
 
             x1 = e.pageX;
@@ -164,20 +199,24 @@ $(document).ready(function() {
             });
             reCalc()
             square.show();
+
             desktop.on("mousemove", function(e) {
                 x2 = e.pageX;
                 y2 = e.pageY;
                 reCalc();
+                highlightIcons();
             });
-        }, 100);
+        }, 130);
 
         desktop.on("mouseup", function(e) {
             clearTimeout(timer);
             square.hide();
             desktop.off("mousemove");
+
         });
 
     });
+
 
 
 

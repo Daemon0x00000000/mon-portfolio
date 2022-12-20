@@ -4,13 +4,10 @@
 // TODO: Add cytoscape js in order to create a graph of my skills
 
 import {Modal} from "./modal";
+import drawSkills from "./competencesGraph";
 
-export const cvModal = new Modal({
-    title: 'Curriculum Vitae',
-    body: '<div class="modal__body"><iframe src="https://drive.google.com/file/d/1QYniUsk8Wdz-Pg7RxkN7T-NnCh7pQFWN/preview" width="100%" height="480" allow="autoplay" ></iframe></div>',
-    resizable: {handles: 'e, w,', minWidth: 400},
 
-}).render();
+export let cvModal = undefined;
 
 export const terminalModal = new Modal({
     title: 'Terminal',
@@ -160,11 +157,21 @@ const commandMap = {
         '</div>' +
         '</div>\n',
     'cv': () => {
+        if (!cvModal) {
+            cvModal = new Modal({
+                title: 'Curriculum Vitae',
+                body: '<div class="modal__body"><iframe src="https://drive.google.com/file/d/1QYniUsk8Wdz-Pg7RxkN7T-NnCh7pQFWN/preview" width="100%" height="480" allow="autoplay" ></iframe></div>',
+                resizable: {handles: 'e, w,', minWidth: 400},
+
+            }).render();
+        }
         cvModal.show();
         cvModal.css('z-index', 1000);
     },
     'ping': '<span style="color: #00ff00">pong</span>',
-    'competences': '<span style="color: #00ff00">Quelque chose de spécial est prévue à cet endroit...\u{1F914}</span>',
+    'competences': () => {
+        drawSkills($('<div style="width: 100%; height: 20vh;"></div>').appendTo(terminalDisplay));
+    },
     'source': () => {
         window.open('https://github.com/Daemon0x00000000/mon-portfolio', '_blank');
     },

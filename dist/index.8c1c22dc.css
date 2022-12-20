@@ -60,14 +60,14 @@ body {
   display: flex;
 }
 
+.desktop__icon.selected {
+  background: #0003;
+}
+
 .desktop__icon__image {
   width: 70%;
   height: 70%;
   cursor: pointer;
-}
-
-.terminalIcon {
-  background: url("terminal.aec37826.png");
 }
 
 .bgSize {
