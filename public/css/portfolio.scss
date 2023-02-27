@@ -1,0 +1,388 @@
+body
+{
+  padding: 0;
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  color: #333;
+  background: #fff;
+  overflow: hidden;
+
+}
+
+
+::selection
+{
+  background: #fff;
+  color: #000;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.desktop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
+  grid-gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  grid-auto-flow: column;
+  background: url('public/img/grad2.jpg') no-repeat;
+  background-size: cover;
+
+  &>.square
+  {
+    position: absolute;
+    border: 1px solid rgba(0,0,0,.3);
+    border-radius: 10px;
+    background: rgba(0,0,0,.2);
+    box-shadow: 0 0 10px rgba(0,0,0,.5);
+
+  }
+
+}
+
+.desktop__icon {
+  width: 5em;
+  height: 5em;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  &.selected
+  {
+    background: rgba(0,0,0,.2);
+  }
+}
+
+.desktop__icon__image {
+  width: 70%;
+  height: 70%;
+  cursor: pointer;
+
+}
+
+.bgSize
+{
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.desktop__icon__name {
+  font-size: 1em;
+  color: #fff;
+  user-select: none;
+
+}
+
+#solidity {
+  width: 50em;
+  height: 15em;
+  stroke: #fff;
+  stroke-width: 5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+
+
+}
+
+.container
+{
+  width: 100%;
+  max-width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  color: #fff;
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+
+  .modal__header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    border-radius: 5px 5px 0 0;
+    max-width: 100%;
+    height: 2em;
+    font-size: 1.1em;
+    line-height: 1.5em;
+    text-align: left;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    transition: all .5s ease-in-out;
+    //Create glass effect
+    background: rgba(255, 255, 255, .1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+
+    &>.modal__header__title {
+      padding: .5em;
+      font-size: 1.1em;
+      line-height: 1.5em;
+      width: 100%;
+      transition: all .5s ease-in-out;
+    }
+
+    &>.modal__header__buttons {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      max-width: 100%;
+      height: 2em;
+
+      &>.modal__header__buttons__button {
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+        margin: 0 .25em;
+        background: #f00;
+        cursor: pointer;
+        transition: all .5s ease-in-out;
+
+        &.red {
+          background: #ff0000;
+        }
+
+        &.yellow {
+          background: #ffff00;
+        }
+
+        &.green {
+          background: #00ff00;
+        }
+
+      }
+    }
+  }
+
+  &> .modal
+  {
+    width: 100%;
+    max-width: 45%;
+    max-height: 60%;
+    border-radius: 5px;
+    font-size: 1.1em;
+    line-height: 1.5em;
+    text-align: left;
+    position: absolute;
+    z-index: 1;
+
+
+
+    &>.modal__body
+    {
+      font-size: 1.1em;
+      line-height: 1.5em;
+      position: relative;
+      z-index: 1;
+      background: #fff;
+      color: #000;
+      padding: 1em;
+      line-break: anywhere;
+      border-radius: 0 0 5px 5px;
+    }
+
+    &>:last-child
+    {
+      box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    }
+
+  }
+
+
+
+  &>.terminal
+  {
+    max-height: 60%;
+    border-radius: 5px;
+    font-family: 'Roboto Mono', monospace;
+    position: relative;
+    z-index: 1;
+
+    a
+    {
+      color: dodgerblue;
+      text-decoration: none;
+      &:hover
+      {
+        text-decoration: underline;
+      }
+
+      &:active
+      {
+        color: darkblue;
+        text-decoration: none;
+      }
+    }
+    // Selection white text on black background
+
+    // Set background to black except for the header that is transparent
+    &>div:not(:first-of-type)
+    {
+      background: rgba(0,0,0,.5);
+    }
+
+    &>.terminal__display
+    {
+      position: relative;
+      z-index: 1;
+      word-break: break-all;
+      overflow-x: hidden;
+      overflow-y: auto;
+      max-height: 88%;
+
+      &::-webkit-scrollbar
+      {
+        width: 0;
+      }
+
+
+
+      &>.terminal__display__output
+      {
+        //Its a span
+        display: inline-block;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0.1em;
+        font-family: 'Roboto Mono', monospace;
+        white-space: pre-wrap;
+
+
+      }
+    }
+
+
+
+    &>.prompt
+    {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+      margin: 0;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 0 0 5px 5px;
+      font-family: 'Roboto Mono', monospace;
+      line-height: 1.5em;
+      text-align: left;
+      z-index: 1;
+      transition: all .5s ease-in-out;
+      overflow: hidden;
+      line-break: anywhere;
+
+      box-shadow: 0 10px 10px 0 rgba(0,0,0,.5);
+
+
+      .prompt__input__cursor
+      {
+        display: inline-block;
+        width: 1ch;
+        height: 1.5em;
+        background: #fff;
+        border: 1px solid #fff;
+        animation: blink 1s infinite;
+
+      }
+
+      .not__focused
+      {
+        background: none;
+        animation: none;
+      }
+
+      .prompt__input__field
+      {
+        //Make it invisible
+        opacity: 0;
+        position: absolute;
+        z-index: 0;
+        top:-100%;
+        left: 0;
+
+      }
+
+      .prompt__input__value
+      {
+        // Wrap the text
+        white-space: pre-line;
+        padding: 0.15em;
+      }
+
+      &>.prompt__input
+      {
+        background: transparent;
+        color: #fff;
+        border: none;
+        outline: none;
+        font-size: 1em;
+        line-height: 1.5em;
+        text-align: left;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+
+        &>.prompt__input__value
+        {
+          // Wrap the text
+          padding:0;
+        }
+
+
+      }
+
+      &>.prompt__user
+      {
+        cursor: text;
+        font-size: 1em;
+        line-height: 1.5em;
+        text-align: left;
+        padding: 0 .05em;
+        margin: 0;
+
+
+      }
+    }
+
+
+  }
+
+
+}
