@@ -130,11 +130,11 @@ export default class MyPortfolio {
     }
 
     loadFiles(){
-        loadFile(this.scene,'src/three/models/bedroom.glb', [-0.2, 1.432, 1.255], [0.4, 0.4, 0.4], [0, 1.56, 0]);
-        loadFile(this.scene,'src/three/models/desk.glb', [-0.75, 0.75, 0.5], [0.01, 0.01, 0.01], [0, 0, 0]);
-        loadFile(this.scene,'src/three/models/monitor.glb', [0.05, 1.176, 0.4], [0.035, 0.035, 0.035], [0, 0, 0]);
-        loadFile(this.scene,'src/three/models/keyboard.glb', [-0.15, 1.038, 0.515], [0.016, 0.016, 0.016], [0, 0, 0]);
-        loadFile(this.scene,'src/three/models/mouse.glb', [0.25, 1.04, 0.44], [0.06, 0.06, 0.06], [0, 0, 0]);
+        loadFile(this.scene,'/public/models/bedroom.glb', [-0.2, 1.432, 1.255], [0.4, 0.4, 0.4], [0, 1.56, 0]);
+        loadFile(this.scene,'/public/models/desk.glb', [-0.75, 0.75, 0.5], [0.01, 0.01, 0.01], [0, 0, 0]);
+        loadFile(this.scene,'/public/models/monitor.glb', [0.05, 1.176, 0.4], [0.035, 0.035, 0.035], [0, 0, 0]);
+        loadFile(this.scene,'/public/models/keyboard.glb', [-0.15, 1.038, 0.515], [0.016, 0.016, 0.016], [0, 0, 0]);
+        loadFile(this.scene,'/public/models/mouse.glb', [0.25, 1.04, 0.44], [0.06, 0.06, 0.06], [0, 0, 0]);
     }
 
     setHighlightedObject(object) {
