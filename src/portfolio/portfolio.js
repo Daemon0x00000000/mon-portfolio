@@ -23,10 +23,10 @@ $(document).ready(function() {
 
 
     commandInterpreter("motd");
-    new DesktopIcon({title:"Terminal", icon:"/public/img/terminal.png",action: () => {
+    new DesktopIcon({title:"Terminal", icon:"img/terminal.png",action: () => {
         terminalModal.fadeIn(250);
     }}).render();
-    new DesktopIcon({title:"Settings", icon:"/public/img/settings.png",action: () => {
+    new DesktopIcon({title:"Settings", icon:"img/settings.png",action: () => {
         alert("En cours de développement");
     }}).render();
 
