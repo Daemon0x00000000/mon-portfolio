@@ -1,5 +1,4 @@
 
-
 import {
     PerspectiveCamera,
     Scene,
@@ -14,7 +13,7 @@ import {onSceneMouseUp} from "./listeners/scene/onSceneMouseUp.js";
 import {onSceneWheel} from "./listeners/scene/onSceneWheel.js";
 import {onWindowResize} from "./listeners/window/onWindowResize.js";
 import {onIframeLoad} from "./listeners/dom/onIframeLoad.js";
-import {loadFile} from "./utils/loadFile.js";
+import {isLoaded, loadFile} from "./utils/loadFile.js";
 import GlowShaderMaterial from "./shaders/GlowShaderMaterial.js";
 import {handleIntersections} from "./interactions/handleIntersections.js";
 import {zoomOnObject} from "./camera/zoomOnObject.js";
@@ -22,6 +21,33 @@ export default class MyPortfolio {
     constructor() {
         this.IS_ANIMATING = false;
         this.app = document.getElementById('app');
+        this.files = {
+            'models/bedroom.glb': {
+                position: { x: -0.2, y: 1.432, z: 1.255 },
+                rotation: { x: 0, y: 1.56, z: 0 },
+                scale: { x: 0.4, y: 0.4, z: 0.4 },
+            },
+            'models/desk.glb': {
+                position: { x: -0.75, y: 0.75, z: 0.5 },
+                rotation: { x: 0, y: 0, z: 0 },
+                scale: { x: 0.01, y: 0.01, z: 0.01 },
+            },
+            'models/monitor.glb': {
+                position: { x: 0.05, y: 1.176, z: 0.4 },
+                rotation: { x: 0, y: 0, z: 0 },
+                scale: { x: 0.035, y: 0.035, z: 0.035 },
+            },
+            'models/keyboard.glb': {
+                position: { x: -0.15, y: 1.038, z: 0.515 },
+                rotation: { x: 0, y: 0, z: 0 },
+                scale: { x: 0.016, y: 0.016, z: 0.016 },
+            },
+            'models/mouse.glb': {
+                position: { x: 0.25, y: 1.04, z: 0.44 },
+                rotation: { x: 0, y: 0, z: 0 },
+                scale: { x: 0.06, y: 0.06, z: 0.06 },
+            },
+        };
         this.initWebGlRenderer();
         this.initCSS3DRenderer();
         this.initScene();
@@ -67,10 +93,6 @@ export default class MyPortfolio {
         this.initListeners();
         this.camera.lookAt(this.pObject.position);
         this.animate();
-
-
-
-
     }
 
     initWebGlRenderer(antialias=true) {
@@ -123,19 +145,27 @@ export default class MyPortfolio {
             zoomOnObject(this.camera, this.pObject, 0.1122, this.iframe, this.setIS_ANIMATING.bind(this));
         });
         this.acceptFullscreen = document.querySelector('#acceptFullScreen');
-        this.iframe.addEventListener("load", () => onIframeLoad(this.acceptFullscreen));
+        this.iframe.addEventListener("load", () => {
+            const interval = setInterval(() => {
+                if (isLoaded(this.files)) {
+                    clearInterval(interval);
+                    onIframeLoad(this.acceptFullscreen)
+                }
+            }, 50);
+        });
+
 
         document.addEventListener('fullscreenchange', () => onDocumentFullscreenChange((zoom) => zoomOnObject(this.camera, this.pObject, 0.1122, this.iframe, this.setIS_ANIMATING.bind(this), zoom)));
 
     }
 
     loadFiles(){
-        loadFile(this.scene,'models/bedroom.glb', [-0.2, 1.432, 1.255], [0.4, 0.4, 0.4], [0, 1.56, 0]);
-        loadFile(this.scene,'models/desk.glb', [-0.75, 0.75, 0.5], [0.01, 0.01, 0.01], [0, 0, 0]);
-        loadFile(this.scene,'models/monitor.glb', [0.05, 1.176, 0.4], [0.035, 0.035, 0.035], [0, 0, 0]);
-        loadFile(this.scene,'models/keyboard.glb', [-0.15, 1.038, 0.515], [0.016, 0.016, 0.016], [0, 0, 0]);
-        loadFile(this.scene,'models/mouse.glb', [0.25, 1.04, 0.44], [0.06, 0.06, 0.06], [0, 0, 0]);
+        for (const [modelUrl, properties] of Object.entries(this.files)) {
+            const { position, rotation, scale } = properties;
+            loadFile(this.scene, modelUrl, [position.x, position.y, position.z], [scale.x, scale.y, scale.z], [rotation.x, rotation.y, rotation.z]);
+        }
     }
+
 
     setHighlightedObject(object) {
         this.highlightedObject = object;
@@ -150,6 +180,5 @@ export default class MyPortfolio {
         this.DRenderer.render(this.scene, this.camera);
         this.renderer.render(this.scene, this.camera);
     }
-
 
 }
