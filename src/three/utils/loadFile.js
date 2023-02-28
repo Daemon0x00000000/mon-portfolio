@@ -17,6 +17,5 @@ export const loadFile = (scene, fileName, position, scale, rotation) => {
 }
 
 export const isLoaded = (list) => {
-    console.log(Object.keys(loadedFiles).length, Object.keys(list).length);
     return Object.keys(loadedFiles).length === Object.keys(list).length;
 }
